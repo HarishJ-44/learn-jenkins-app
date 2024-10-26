@@ -29,16 +29,16 @@ pipeline {
             }
                 steps {
                     sh '''
-                        echo 'Test stage'
-                        if cat build/index.html; then
-                             echo "File index.html exists and contents are displayed above."
-                        else
-                             echo "Error: File index.html does not exist."
-                             exit 1
-                        fi
+                        test -f build/index.html
                         npm test
                     '''
                 }
+        }
+    }
+
+    post {
+        always {
+            junit 'test-results/junit.xml'
         }
     }
 }
