@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     stages {
-        /*
         stage('Build') {
             agent {
                 docker {
@@ -21,7 +20,7 @@ pipeline {
                 '''
             }
         }
-        */
+
         stage('Tests') {
             parallel {
                 stage('Unit Test') {
@@ -41,30 +40,23 @@ pipeline {
         always {
             junit 'jest-results/junit.xml'
         }
-    }
         }
-
-        stage('E2E') {
-                agent {
+        
+        stage('Deploy') {
+            agent {
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    image 'node:18-alpine'
                     reuseNode true
                 }
             }
-                steps {
-                    sh '''
-                        npm install serve
-                        node_modules/.bin/serve -s build &
-                        sleep 5
-                        npx playwright test --reporter=html
-                    '''
-                }
-                post {
-        always {
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+            steps {
+                sh'''
+                    npm install netlify-cli -g
+                    netlify --version
+                '''
+            }
         }
-    }
-        }
+
             }
         }
         
