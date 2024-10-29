@@ -14,6 +14,7 @@ pipeline {
                 sh 'docker build -t my-playwright .'
             }
         }
+
         stage('Build') {
             agent {
                 docker {
@@ -108,7 +109,6 @@ pipeline {
                             netlify status
                             netlify deploy --dir=build --json > deploy-output.json
                             CI_ENVIRONMENT_URL=$(node-jq -r '.deploy_url' deploy-output.json)
-                            node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json
                             npx playwright test --reporter=html
                         '''
                     }
