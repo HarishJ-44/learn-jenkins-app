@@ -99,17 +99,9 @@ pipeline {
                     node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json
                 '''
                 script {
-                env.STAGGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout: true)
+                    env.STAGGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout: true)
+                }
             }
-            }
-        }
-
-        stage ('Approval'){
-            steps {
-                timeout(time: 1, unit: 'MINUTES') {
-                input message: 'Do you wish to deploy to production?', ok: 'Yes, I am sure!'
-            }
-            }    
         }
         
         stage('Stagging E2E') {
@@ -144,6 +136,14 @@ pipeline {
                         }
                     }
                 }
+        
+        stage ('Approval'){
+            steps {
+                timeout(time: 1, unit: 'MINUTES') {
+                input message: 'Do you wish to deploy to production?', ok: 'Yes, I am sure!'
+            }
+            }    
+        }
 
         stage('Deploy prod') {
             agent {
